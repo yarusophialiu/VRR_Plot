@@ -1,0 +1,7 @@
+*.png
+*.svg
+*.pyc
+*.json
+log.txt
+test.py
+outputs/
