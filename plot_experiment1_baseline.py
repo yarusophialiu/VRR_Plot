@@ -119,15 +119,15 @@ if __name__ == "__main__":
             plt.errorbar(i, prob, yerr=y_error, color=colors[speed], ecolor=colors[speed], \
                         elinewidth=5, capsize=8, label=speed if i % len(speeds) == 0 else "")
             plt.scatter(i, prob, color=colors[speed], marker='o', s=100, label=f'prob{prob}', )  # '^' is the triangle marker pointing upwards
-            plt.text(i - 0.4, y_min - 0.08, f'{round(prob, 2)}', color='black', fontsize=18, ha='left', va='bottom')  # Adjust position with `ha` and `va`
+            plt.text(i - 0.4, y_min - 0.1, f'{round(prob, 2)}', color='black', fontsize=18, ha='left', va='bottom')  # Adjust position with `ha` and `va`
             # significance value
             print(f'\np_value {p_value[speed][bitrates.index(bitrate)].pvalue}')
             if p_value[speed][bitrates.index(bitrate)].pvalue < 0.01:
                 print(f'p_value < 0.01')
-                plt.text(i -0.18, y_min - 0.04, '**', color='black', fontsize=18, ha='left', va='bottom') 
+                plt.text(i -0.15, y_min - 0.06, '**', color='black', fontsize=18, ha='left', va='bottom') 
             elif p_value[speed][bitrates.index(bitrate)].pvalue < 0.05:
                 print(f'p_value < 0.05')
-                plt.text(i -0.1, y_min - 0.04, '*', color='black', fontsize=18, ha='left', va='bottom')  # Adjust position with `ha` and `va`
+                plt.text(i -0.1, y_min - 0.06, '*', color='black', fontsize=18, ha='left', va='bottom')  # Adjust position with `ha` and `va`
 
         plt.axhline(0.5, color='lightgrey', linestyle='--', linewidth=2, label="y = 0.5")
         plt.text(10.8, 0.42, "p = 0.5", color='darkgrey', fontsize=18, ha='center')
@@ -156,14 +156,14 @@ if __name__ == "__main__":
   
         plt.tight_layout()
 
-        # plt.text(
-        #     0.1, 0.91,  # Coordinates in figure-relative units
-        #     f"N = {number_of_observers} x 3 x 3",  # Text to display
-        #     fontsize=15,
-        #     color="black",
-        #     transform=plt.gcf().transFigure,  # Transform coordinates to figure-relative
-        #     ha="left", va="bottom"  # Align text to bottom-left
-        # )
+        plt.text(
+            0.1, 0.91,  # Coordinates in figure-relative units
+            f"N = {N}",  # Text to display
+            fontsize=15,
+            color="black",
+            transform=plt.gcf().transFigure,  # Transform coordinates to figure-relative
+            ha="left", va="bottom"  # Align text to bottom-left
+        )
 
         now = datetime.now()
         plot_pth = now.strftime("%Y-%m-%d-%H_%M")
