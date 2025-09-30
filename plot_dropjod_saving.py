@@ -248,7 +248,7 @@ def get_average_saving_per_bitrate(total_saving_dict, path='', WRITE=False):
 # paper Fig 11: Average percentage reduction in pixels rendered per second
 # given jod, find the saving of f * r^2
 if __name__ == "__main__":
-    SAVE = False # True, False
+    SAVE = True # True, False
     SHOW = False
     DEBUG = False
     # WRITE_LABELS_WITHIN_JOD_RANGE = True # True False write all labels within JOD range to python file
@@ -277,9 +277,7 @@ if __name__ == "__main__":
     # JODDROP = 0
 
 
-    # today = get_today()
-    today = '2025-05-24'
-    output_dir = f'pyoutput/{today}'
+    output_dir = f'pyoutput'
     os.makedirs(output_dir, exist_ok=True)
     now = datetime.now()
     time_path = now.strftime("%m%d-%H%M")
@@ -307,7 +305,7 @@ if __name__ == "__main__":
     savings_by_bitrate = {br: [] for br in bitrates}
     if PLOT:
         colors = ['deepskyblue', 'gold', 'salmon', 'palegreen', 'plum',] # dodgerblue darkorange
-        plt.figure(figsize=(10,6)) # width=10 inches, height=6 inches
+        fig = plt.figure(figsize=(10,6)) # width=10 inches, height=6 inches
 
         for joddrop in JODS:
             module_name = f"saving_percent_JOD"
@@ -326,15 +324,43 @@ if __name__ == "__main__":
             bitrate = int(br/1000) if br != 1500 else (br/1000)
             plt.plot([j for j in JODS], savings_by_bitrate[br], marker='o', color=colors[i], label=f"{bitrate} Mbps")
         
-        plt.xticks(JODS)
+        plt.ylim(bottom=25)
+        plt.xlim(left=0)
+
+        output_path = f'outputs/{get_today()}'
+        os.makedirs(output_path, exist_ok=True)
+        plt.xticks(JODS, fontsize=15)
+        plt.yticks(fontsize=15)
         plt.xlabel("Quality reduction (JOD)", fontsize=15)
         plt.ylabel(f"Average % rendering saving", fontsize=15)
         plt.grid(True, color='lightgrey', linestyle='--')
         plt.legend(title="Bitrate", fontsize=15)
+
+        # Find y value of 1 Mbps curve at x=0.25
+        x_target = 0.25
+        y_target_1mbps = np.interp(x_target, JODS, savings_by_bitrate[1000])
+        y_target_4mbps = np.interp(x_target, JODS, savings_by_bitrate[4000])
+        # print(f'y_target {y_target}')
+        ymin, ymax = plt.ylim() 
+
+        # Draw vertical and horizontal line segment from bottom to the curve
+        plt.vlines(x=x_target, ymin=ymin, ymax=y_target_1mbps, color='red', linestyle='--', linewidth=1.5)
+        plt.hlines(y=y_target_1mbps, xmin=0, xmax=x_target, color='red', linestyle='--', linewidth=1.5)
+        plt.hlines(y=y_target_4mbps, xmin=0, xmax=x_target, color='red', linestyle='--', linewidth=1.5)
+        
+        # Dots at intersections
+        plt.scatter([x_target], [y_target_1mbps], color='red', zorder=5)   # vertical ∩ 1Mbps curve
+        plt.scatter([x_target], [y_target_4mbps], color='red', zorder=5)   # vertical ∩ 1Mbps curve
+        # plt.scatter([x_target], [ymin], color='red', zorder=5)             # vertical ∩ x-axis
+        # plt.scatter([0], [y_target_1mbps], color='red', zorder=5)          # horizontal (1Mbps) ∩ y-axis
+        # plt.scatter([0], [y_target_4mbps], color='red', zorder=5)          # horizontal (4Mbps) ∩ y-axis
+
+        plt.text(x_target + 0.12, ymin + (y_target_1mbps - ymin) * 0.1,   # position (10% up the line)
+         "JOD=0.25", va='bottom', ha='center', fontsize=12, color='red')
+
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(f'imageoutput/dropjod_saving.svg')
+        plt.savefig(f'{output_path}/dropjod_saving.pdf')
         plt.show()
 
-        # read 
 
